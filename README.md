@@ -40,7 +40,6 @@ El proyecto integra una arquitectura compuesta por backend web, análisis con IA
   <em>Video demostrativo completo del funcionamiento del sistema Juez Logit</em>
 </p>
 
-> Para mostrar el GIF en GitHub, guarda el archivo en la carpeta `assets/` con el nombre `demo.gif`.
 
 ---
 
