@@ -20,10 +20,34 @@ El proyecto integra una arquitectura compuesta por backend web, análisis con IA
 
 ---
 
+## Vista rápida del sistema
+
+<p align="center">
+  <img src="assets/demo.gif" width="80%" alt="Demostración GIF del sistema Juez Logit">
+</p>
+
+<p align="center">
+  <em>Demostración en GIF del flujo principal del sistema</em>
+</p>
+
+<p align="center">
+  <a href="https://youtu.be/RK5Msci8DQw" target="_blank">
+    <img src="https://img.youtube.com/vi/RK5Msci8DQw/hqdefault.jpg" width="75%" alt="Video demostrativo de Juez Logit">
+  </a>
+</p>
+
+<p align="center">
+  <em>Video demostrativo completo del funcionamiento del sistema Juez Logit</em>
+</p>
+
+> Para mostrar el GIF en GitHub, guarda el archivo en la carpeta `assets/` con el nombre `demo.gif`.
+
+---
+
 ## Capturas del sistema
 
 <p align="center">
-  <img src="assets/ui-main.png" width="60%">
+  <img src="assets/ui-main.png" width="60%" alt="Interfaz principal de Juez Logit">
 </p>
 
 <p align="center">
@@ -31,7 +55,7 @@ El proyecto integra una arquitectura compuesta por backend web, análisis con IA
 </p>
 
 <p align="center">
-  <img src="assets/ui-results.png" width="80%">
+  <img src="assets/ui-results.png" width="80%" alt="Resultados del análisis con inteligencia artificial">
 </p>
 
 <p align="center">
@@ -59,7 +83,7 @@ El proyecto integra una arquitectura compuesta por backend web, análisis con IA
 ## Arquitectura del sistema
 
 <p align="center">
-  <img src="assets/Aquitectura.png" width="650">
+  <img src="assets/Aquitectura.png" width="650" alt="Arquitectura general del sistema">
 </p>
 
 <p align="center">
@@ -208,6 +232,46 @@ El sistema evalúa a cada robot con una puntuación máxima de 40 puntos.
 | Control | 10 | Dominio de arena, orientación, empuje y posición táctica. |
 
 El ganador se determina por el puntaje total. En caso de igualdad, se aplica desempate por daño, agresividad, control y condición. El empate solo se considera cuando no existe contacto efectivo, daño, control ni presión ofensiva clara.
+
+---
+
+## Resultados obtenidos
+
+Durante la validación del sistema se realizaron pruebas de percepción y pruebas técnicas con videos de batallas de robots. El objetivo fue comparar el desempeño de Juez Logit frente al arbitraje tradicional y verificar su precisión como herramienta de apoyo para el juez humano.
+
+### Resultados de percepción
+
+Se aplicaron encuestas a 12 personas relacionadas con el evento IEEE Pumabot, entre jueces, participantes y personas con conocimiento de la competencia. La comparación se realizó entre el arbitraje tradicional y el uso del sistema Juez Logit como apoyo arbitral.
+
+| Escenario evaluado | Encuestados | Respuestas válidas | Respuestas favorables | Aceptación |
+|---|---:|---:|---:|---:|
+| Arbitraje tradicional | 12 | 120 | 44 | 36.7 % |
+| Con Juez Logit | 12 | 143 | 116 | 81.1 % |
+
+Estos resultados muestran una mejora en la percepción del proceso arbitral al utilizar Juez Logit, especialmente en aspectos relacionados con claridad, confianza, reducción de subjetividad y apoyo al juez humano.
+
+### Resultados técnicos
+
+El sistema fue evaluado en dos escenarios. El primero utilizó videos históricos del repositorio BrettZone de la NHRL, mientras que el segundo se realizó con videos capturados durante el evento IEEE Pumabot.
+
+| Escenario de prueba | Videos analizados | Aciertos | Fallos | Precisión |
+|---|---:|---:|---:|---:|
+| Videos históricos BrettZone | 30 | 26 | 4 | 86.7 % |
+| Evento IEEE Pumabot | 20 | 18 | 2 | 90 % |
+
+En las pruebas con videos históricos, el sistema alcanzó una precisión de 86.7 % utilizando únicamente evidencia en video. En el evento IEEE Pumabot, la precisión fue del 90 % al incorporar videos junto con imágenes iniciales y finales de los robots cuando estuvieron disponibles.
+
+### Resumen general
+
+| Indicador | Resultado |
+|---|---:|
+| Aceptación con arbitraje tradicional | 36.7 % |
+| Aceptación con Juez Logit | 81.1 % |
+| Precisión con 30 videos históricos | 86.7 % |
+| Precisión con 20 videos IEEE Pumabot | 90 % |
+| Tiempo de respuesta | ≤ 3 minutos |
+
+Los resultados obtenidos evidencian que Juez Logit puede funcionar como una herramienta viable de apoyo al arbitraje, ya que permite analizar evidencia visual, generar una puntuación técnica y presentar un resultado más trazable para los participantes y organizadores.
 
 ---
 
