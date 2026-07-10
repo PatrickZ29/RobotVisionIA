@@ -26,9 +26,7 @@ El proyecto integra una arquitectura compuesta por backend web, análisis con IA
   <img src="assets/demo.gif" width="80%" alt="Demostración GIF del sistema Juez Logit">
 </p>
 
-<p align="center">
-  <em>Demostración en GIF del flujo principal del sistema</em>
-</p>
+
 
 <p align="center">
   <a href="https://youtu.be/RK5Msci8DQw" target="_blank">
