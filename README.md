@@ -1,309 +1,236 @@
-# Juez Logit  
-### Sistema Inteligente de Arbitraje para Combates de Robótica
+🥊 Juez Bot
+### Sistema Multimodal Integrado para Arbitraje Asistido por IA en Robótica de Combate
 
-[![Version](https://img.shields.io/badge/Version-1.0-blue?style=for-the-badge)]()  
-[![Backend](https://img.shields.io/badge/API-FastAPI-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)  
-[![IA](https://img.shields.io/badge/IA-Gemini_API-4285F4?style=for-the-badge)]()  
-[![Database](https://img.shields.io/badge/Database-PostgreSQL-336791?style=for-the-badge&logo=postgresql)]()  
-[![Hardware](https://img.shields.io/badge/Hardware-Raspberry_Pi_Zero_2W-C51A4A?style=for-the-badge&logo=raspberry-pi)]()  
-[![M5Stack](https://img.shields.io/badge/M5Stack-ESP--NOW-orange?style=for-the-badge)]()  
-
----
-
-## Descripción
-
-**Juez Logit** es un sistema inteligente de apoyo al arbitraje para combates de robótica. Su objetivo es reducir la subjetividad en la toma de decisiones mediante el análisis de video, imágenes iniciales y finales de los robots, y criterios técnicos de evaluación.
-
-El sistema permite registrar la batalla, enviar el video al backend, procesar la evidencia con inteligencia artificial y generar un resultado estructurado con el ganador, puntuaciones y justificación técnica. La decisión final puede ser utilizada como apoyo para el juez humano durante competencias de robótica de combate.
-
-El proyecto integra una arquitectura compuesta por backend web, análisis con IA, almacenamiento de resultados, captura de video mediante Raspberry Pi, módulos físicos con M5Stack y un reloj digital para el control del tiempo de batalla.
+[![Version](https://img.shields.io/badge/Version-1.0-blue?style=for-the-badge)]()
+[![Backend](https://img.shields.io/badge/API-FastAPI-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![IA](https://img.shields.io/badge/IA-Gemini_2.5_Flash-4285F4?style=for-the-badge)]()
+[![Database](https://img.shields.io/badge/Database-PostgreSQL-336791?style=for-the-badge&logo=postgresql)]()
+[![Hardware](https://img.shields.io/badge/Hardware-Raspberry_Pi_Zero_2W-C51A4A?style=for-the-badge&logo=raspberry-pi)]()
+[![M5Stack](https://img.shields.io/badge/M5Stack-ESP--NOW-orange?style=for-the-badge)]()
+[![Paper](https://img.shields.io/badge/IEEE_Access-Publicado-00629B?style=for-the-badge)]()
 
 ---
 
-## Vista rápida del sistema
+## 📌 Descripción del Proyecto
+
+**Juez Bot** es un sistema multimodal integrado de apoyo al arbitraje para combates de robótica, publicado como artículo científico en *IEEE Access*. Su objetivo es reducir la subjetividad en la toma de decisiones cuando un combate no termina por *knockout* (KO) o rendición, combinando terminales de campo, un módulo portátil de árbitro, un temporizador oficial, una unidad móvil de captura, una aplicación web, un backend, una base de datos y un servicio de inferencia multimodal en un flujo de trabajo trazable.
+
+El sistema conserva las puntuaciones de agresividad, condición, daño y control para ambos robots, junto con el ganador propuesto y una justificación técnica, siempre sujeta a confirmación humana del árbitro (*human-in-the-loop*).
+
+---
+
+## 🖼️ Vista Rápida del Sistema
 
 <p align="center">
-  <img src="assets/demo.gif" width="80%" alt="Demostración GIF del sistema Juez Logit">
+  <img src="assets/demo.gif" width="80%" alt="Demostración GIF del sistema Juez Bot">
 </p>
-
-
 
 <p align="center">
   <a href="https://youtu.be/RK5Msci8DQw" target="_blank">
-    <img src="https://img.youtube.com/vi/RK5Msci8DQw/hqdefault.jpg" width="75%" alt="Video demostrativo de Juez Logit">
+    <img src="https://img.youtube.com/vi/RK5Msci8DQw/hqdefault.jpg" width="75%" alt="Video demostrativo de Juez Bot">
   </a>
 </p>
 
-<p align="center">
-  <em>Video demostrativo completo del funcionamiento del sistema Juez Logit</em>
-</p>
-
+<p align="center"><em>Video demostrativo completo del funcionamiento del sistema</em></p>
 
 ---
 
-## Capturas del sistema
+## 🔌 Arquitectura del Sistema
 
 <p align="center">
-  <img src="assets/ui-main.png" width="60%" alt="Interfaz principal de Juez Logit">
+  <img src="assets/architecture.png" width="85%" alt="Arquitectura por capas de Juez Bot">
 </p>
+<p align="center"><em>Figura 1. Arquitectura por capas: dispositivos de campo, captura, servicios, persistencia e inferencia con IA.</em></p>
 
-<p align="center">
-  <em>Interfaz principal del sistema Juez Logit</em>
-</p>
+El sistema se organiza en siete capas, diseñadas para reducir el acoplamiento entre dispositivos y permitir reemplazar componentes sin modificar todo el flujo:
 
-<p align="center">
-  <img src="assets/ui-results.png" width="80%" alt="Resultados del análisis con inteligencia artificial">
-</p>
-
-<p align="center">
-  <em>Visualización del resultado generado por la inteligencia artificial</em>
-</p>
+| Capa | Componente | Tecnología | Responsabilidad principal |
+|---|---|---|---|
+| Operadores | Terminal A y Terminal B | AtomS3, botones físicos | Confirmar estado *listo*, solicitar intervención y transmitir eventos al árbitro |
+| Control de árbitro | Módulo de árbitro | M5Stack Core2, UIFlow, MicroPython | Iniciar, pausar, reanudar y detener el combate; recibir estados y mostrar alertas |
+| Temporización | Temporizador oficial | Python, PyQt5 | Mostrar el tiempo reglamentario y ejecutar comandos del módulo de árbitro |
+| Adquisición | Juez Bot (unidad móvil) | Sphero RVR+, Raspberry Pi Zero 2 W, cámara, FFmpeg | Capturar video, controlar segmentos de grabación y transferir el archivo al backend |
+| Servicios | Backend | FastAPI, Uvicorn, Pydantic, HTTPX | Exponer endpoints, validar solicitudes y coordinar archivos, inferencia y persistencia |
+| Presentación | Aplicación web | Jinja2, HTML, CSS, JavaScript | Registrar robots, cargar imágenes, ejecutar análisis, consultar historial |
+| Persistencia | Base de datos | PostgreSQL, psycopg2 | Almacenar combates, evidencia, tiempos de proceso, puntuaciones y decisiones |
+| Inferencia | Motor multimodal | Gemini 2.5 Flash vía REST API | Evaluar video e imágenes de referencia según los criterios de arbitraje |
 
 ---
 
-## Características principales
+## 🏟️ Disposición Física en la Arena
 
-- Grabación de video mediante Raspberry Pi Zero 2 W.
-- Control remoto de inicio, pausa, reanudación y detención de grabación.
-- Carga manual o automática de videos de batalla.
-- Análisis de video e imágenes mediante Gemini API.
-- Evaluación por criterios técnicos: agresividad, condición, daño y control.
-- Identificación de robots por nombre e imágenes de referencia.
-- Exclusión del robot observador Juez Bot durante el análisis.
-- Interfaz web desarrollada con HTML, CSS, JavaScript y Jinja2.
-- Historial de batallas almacenado en PostgreSQL.
-- Módulos físicos con M5Stack y comunicación ESP-NOW.
-- Reloj del juez desarrollado en PyQt5 con comunicación serial USB.
+<p align="center">
+  <img src="assets/arena-layout.png" width="75%" alt="Disposición física de los módulos en la arena de combate">
+</p>
+<p align="center"><em>Figura 2. Ubicación de terminales de operador, Juez Bot (unidad móvil de cámara), estación del árbitro y temporizador oficial, con enlaces ESP-NOW.</em></p>
+
+- Los dos **terminales de operador** se ubican en las esquinas externas de la arena.
+- **Juez Bot**, la unidad móvil de captura (Sphero RVR+ + Raspberry Pi Zero 2 W + cámara), se posiciona en una esquina interna con línea de visión sobre todo el combate.
+- El **módulo de árbitro** (M5Stack Core2) y el **temporizador oficial** se ubican junto a la estación del árbitro, conectados por comunicación serial.
+- Todos los enlaces de campo usan **ESP-NOW**, sin depender de la red WiFi local.
 
 ---
 
-## Arquitectura del sistema
+## 🧠 Flujo de Inferencia Multimodal
 
 <p align="center">
-  <img src="assets/Aquitectura.png" width="650" alt="Arquitectura general del sistema">
+  <img src="assets/inference-workflow.png" width="70%" alt="Flujo de inferencia multimodal de Juez Bot">
 </p>
+<p align="center"><em>Figura 3. Etapas de inferencia: validación de evidencia, codificación, construcción del prompt, evaluación por rúbrica, persistencia y confirmación del árbitro.</em></p>
 
-<p align="center">
-  <em>Arquitectura general del sistema Juez Logit</em>
-</p>
-
-El sistema se organiza en los siguientes módulos:
-
-1. **Cliente de captura:** Raspberry Pi Zero 2 W con cámara USB para grabar la batalla.
-2. **Backend:** API desarrollada con FastAPI para recibir videos, controlar la grabación y procesar solicitudes.
-3. **Servicio de IA:** integración con Gemini API para analizar video e imágenes.
-4. **Base de datos:** PostgreSQL para almacenar historial de batallas y resultados.
-5. **Interfaz web:** formulario para cargar evidencias, visualizar resultados y consultar historial.
-6. **Módulos físicos:** dispositivos M5Stack para botones de estado y control del árbitro.
-7. **Reloj del juez:** temporizador independiente desarrollado con PyQt5.
+1. **Validación de entrada** — se verifica disponibilidad y tipo de video/imágenes.
+2. **Codificación de medios** — el video se codifica para su transmisión al servicio multimodal.
+3. **Construcción del prompt** — identificación inequívoca de robots, reglas del área e instrucciones de comparación.
+4. **Inferencia multimodal con IA** — Gemini 2.5 Flash evalúa el combate completo.
+5. **Análisis estructurado de la respuesta** — validación por expresiones regulares y rangos.
+6. **Extracción de criterios** — agresividad, daño, control y condición.
+7. **Propuesta de ganador**.
+8. **Persistencia** — en PostgreSQL, con la respuesta original íntegra para trazabilidad.
+9. **Presentación web** del resultado.
+10. **Confirmación del árbitro** — decisión final humana.
 
 ---
 
-## Stack tecnológico
+## 🧩 Tecnologías Utilizadas
 
-| Componente | Tecnología |
+| Tecnología | Versión | Aplicación |
+|---|---|---|
+| Python | 3.x | Captura, temporización y backend |
+| FastAPI | 0.136.1 | API REST asíncrona |
+| Uvicorn | 0.46.0 | Servidor ASGI |
+| Pydantic | 2.13.4 | Validación de datos |
+| Jinja2 | 3.1.6 | Renderizado de la interfaz |
+| PostgreSQL | 9.4 | Persistencia |
+| psycopg2 | 2.9.12 | Conexión SQL |
+| Gemini | 2.5 Flash | Inferencia multimodal |
+| HTTPX | 0.28.1 | Comunicación entre servicios |
+| M5Stack AtomS3 / Core2 | — | Terminales de operador y módulo de árbitro |
+| ESP-NOW | — | Comunicación inalámbrica de campo |
+| Sphero RVR+ | — | Plataforma móvil de la unidad de captura |
+| FFmpeg | — | Codificación de video (H.264, MP4) |
+| PyQt5 | — | Reloj del juez con comunicación serial |
+| Render | — | Despliegue del backend |
+
+---
+
+## 🚀 Funcionalidades Principales
+
+| Funcionalidad | Descripción |
 |---|---|
-| Backend | FastAPI + Uvicorn |
-| Frontend | HTML5, CSS3, JavaScript |
-| Plantillas | Jinja2 |
-| Inteligencia artificial | Gemini API |
-| Base de datos | PostgreSQL |
-| Cliente HTTP | Requests / HTTPX |
-| Variables de entorno | python-dotenv |
-| Captura de video | Raspberry Pi Zero 2 W + cámara USB |
-| Procesamiento de video | FFmpeg |
-| Módulos físicos | M5Stack Core2 + ESP-NOW |
-| Reloj del juez | PyQt5 + comunicación serial |
-| Despliegue | Render |
+| 🎥 Captura móvil | Grabación de combate mediante Sphero RVR+ + Raspberry Pi Zero 2 W + cámara. |
+| 🔴 Control remoto de grabación | Inicio, pausa, reanudación y detención sincronizados con el árbitro. |
+| 🤖 Análisis multimodal | Evaluación de video e imágenes iniciales/finales mediante Gemini 2.5 Flash. |
+| 🥋 Evaluación por rúbrica | Puntuación técnica en agresividad, condición, daño y control. |
+| 🏷️ Identificación de robots | Reconocimiento inequívoco de Robot A / Robot B por nombre e imágenes. |
+| 🖥️ Interfaz web | Registro de robots, carga de evidencia, resultados y verificación técnica. |
+| 🗄️ Historial trazable | Registro completo en PostgreSQL, incluida la respuesta original del modelo. |
+| 📡 Módulos físicos | Terminales AtomS3 y módulo árbitro M5Stack Core2 vía ESP-NOW. |
+| ⏱️ Reloj oficial | Temporizador independiente en PyQt5 con comandos seriales. |
+| 🧑‍⚖️ Árbitro en el bucle | El sistema propone; el árbitro humano confirma o corrige la decisión final. |
 
 ---
 
-## Instalación
+## 🚦 Motor de Evaluación
 
-Clonar el repositorio:
-
-```bash
-git clone https://github.com/PatrickZ29/RobotVisionIA.git
-cd RobotVisionIA
-```
-
-Crear y activar un entorno virtual:
-
-```bash
-python -m venv venv
-```
-
-En Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-En Linux o macOS:
-
-```bash
-source venv/bin/activate
-```
-
-Instalar dependencias:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## Configuración de variables de entorno
-
-Crear un archivo `.env` en la raíz del backend con la siguiente estructura:
-
-```env
-GEMINI_API_KEY=coloca_tu_api_key_aqui
-GEMINI_MODEL=gemini-3.1-flash-lite
-
-VIDEO_FOLDER=videos
-
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=robot_ai
-DB_USER=postgres
-DB_PASSWORD=1234
-```
-
-Para despliegue en Render o servicios similares, se puede utilizar:
-
-```env
-DATABASE_URL=postgresql://usuario:password@host:5432/base_datos
-```
-
-> No se recomienda subir archivos `.env` ni claves privadas al repositorio.
-
----
-
-## Ejecución del backend
-
-Ejecutar la aplicación con Uvicorn:
-
-```bash
-uvicorn main:app --reload
-```
-
-Abrir en el navegador:
-
-```text
-http://localhost:8000
-```
-
-Para verificar el estado del servidor:
-
-```text
-http://localhost:8000/health
-```
-
----
-
-## Flujo de funcionamiento
-
-1. El juez inicia la grabación desde la interfaz web o módulo físico.
-2. La Raspberry Pi consulta el estado del servidor.
-3. La cámara graba la batalla en formato MP4.
-4. El video se envía al backend mediante el endpoint `/upload`.
-5. El usuario carga o confirma las evidencias en la interfaz web.
-6. El backend envía el video e imágenes a Gemini API.
-7. La IA analiza la batalla con base en criterios técnicos.
-8. El sistema extrae el ganador y las puntuaciones.
-9. El resultado se almacena en PostgreSQL.
-10. La interfaz muestra el ganador, tiempo de procesamiento y análisis técnico.
-
----
-
-## Motor de evaluación
-
-El sistema evalúa a cada robot con una puntuación máxima de 40 puntos.
+Cada robot se evalúa con un puntaje máximo de **40 puntos**:
 
 | Criterio | Puntaje máximo | Descripción |
 |---|---:|---|
 | Agresividad | 15 | Iniciativa ofensiva, presión y búsqueda de contacto. |
-| Condición | 5 | Estado físico y funcional al finalizar la batalla. |
+| Condición | 5 | Estado físico y funcional al finalizar el combate. |
 | Daño | 10 | Daño visible causado al oponente. |
 | Control | 10 | Dominio de arena, orientación, empuje y posición táctica. |
 
-El ganador se determina por el puntaje total. En caso de igualdad, se aplica desempate por daño, agresividad, control y condición. El empate solo se considera cuando no existe contacto efectivo, daño, control ni presión ofensiva clara.
+El ganador se determina por puntaje total; en caso de igualdad se aplica desempate por daño → agresividad → control → condición. El empate solo se considera cuando no hay contacto efectivo ni presión ofensiva clara.
 
 ---
 
-## Resultados obtenidos
+## 📊 Resultados de Validación (IEEE Access)
 
-Durante la validación del sistema se realizaron pruebas de percepción y pruebas técnicas con videos de batallas de robots. El objetivo fue comparar el desempeño de Juez Logit frente al arbitraje tradicional y verificar su precisión como herramienta de apoyo para el juez humano.
+Validado en dos escenarios: 30 combates históricos del repositorio **BrettZone-NHRL** y 20 combates con decisión de jueces del evento **IEEE Pumabot 2026**.
 
-### Resultados de percepción
+| Escenario | n | Precisión (Acc.) | IC 95% (Wilson) | Bal. Acc. | Macro F1 | MCC |
+|---|---:|---:|---|---:|---:|---:|
+| BrettZone–NHRL | 30 | 86.7% | 70.3–94.7% | 86.1% | 86.1% | 0.722 |
+| IEEE Pumabot 2026 | 20 | 90.0% | 69.9–97.2% | 89.0% | 89.0% | 0.780 |
+| **Combinado** | 50 | **88.0%** | 76.2–94.4% | 87.3% | 87.3% | 0.745 |
 
-Se aplicaron encuestas a 12 personas relacionadas con el evento IEEE Pumabot, entre jueces, participantes y personas con conocimiento de la competencia. La comparación se realizó entre el arbitraje tradicional y el uso del sistema Juez Logit como apoyo arbitral.
+### 🎯 Matriz de confusión combinada
 
-| Escenario evaluado | Encuestados | Respuestas válidas | Respuestas favorables | Aceptación |
-|---|---:|---:|---:|---:|
-| Arbitraje tradicional | 12 | 120 | 44 | 36.7 % |
-| Con Juez Logit | 12 | 143 | 116 | 81.1 % |
+| | Predicho A | Predicho B |
+|---|---:|---:|
+| **Oficial A** | 28 | 3 |
+| **Oficial B** | 3 | 16 |
 
-Estos resultados muestran una mejora en la percepción del proceso arbitral al utilizar Juez Logit, especialmente en aspectos relacionados con claridad, confianza, reducción de subjetividad y apoyo al juez humano.
+Los errores fueron simétricos (3 en cada dirección), sin evidencia de sesgo posicional hacia A o B.
 
-### Resultados técnicos
+### ⚖️ Contribución normalizada de criterios (dataset combinado)
 
-El sistema fue evaluado en dos escenarios. El primero utilizó videos históricos del repositorio BrettZone de la NHRL, mientras que el segundo se realizó con videos capturados durante el evento IEEE Pumabot.
-
-| Escenario de prueba | Videos analizados | Aciertos | Fallos | Precisión |
-|---|---:|---:|---:|---:|
-| Videos históricos BrettZone | 30 | 26 | 4 | 86.7 % |
-| Evento IEEE Pumabot | 20 | 18 | 2 | 90 % |
-
-En las pruebas con videos históricos, el sistema alcanzó una precisión de 86.7 % utilizando únicamente evidencia en video. En el evento IEEE Pumabot, la precisión fue del 90 % al incorporar videos junto con imágenes iniciales y finales de los robots cuando estuvieron disponibles.
-
-### Resumen general
-
-| Indicador | Resultado |
+| Criterio | Contribución |
 |---|---:|
-| Aceptación con arbitraje tradicional | 36.7 % |
-| Aceptación con Juez Logit | 81.1 % |
-| Precisión con 30 videos históricos | 86.7 % |
-| Precisión con 20 videos IEEE Pumabot | 90 % |
-| Tiempo de respuesta | ≤ 3 minutos |
+| Control | 33.6% |
+| Agresividad | 32.3% |
+| Daño | 21.7% |
+| Condición | 12.4% |
 
-Los resultados obtenidos evidencian que Juez Logit puede funcionar como una herramienta viable de apoyo al arbitraje, ya que permite analizar evidencia visual, generar una puntuación técnica y presentar un resultado más trazable para los participantes y organizadores.
+El margen promedio entre puntajes fue de **14.80 puntos**. Cinco de los seis desacuerdos tuvieron márgenes ≥11 puntos, lo que confirma que un margen amplio **no** debe interpretarse como confianza calibrada — de ahí la importancia de mantener al árbitro en el bucle de decisión.
+
+### 🗳️ Pruebas funcionales end-to-end
+
+| Código | Prueba | Resultado documentado |
+|---|---|---|
+| F1 | Señalización de operadores | Estados y alertas mostrados en el M5Stack Core2 |
+| F2 | Control del temporizador | Comandos seriales interpretados correctamente por el reloj PyQt5 |
+| F3 | Sincronización de captura | Grabación (inicio/pausa/reanuda/detiene) verificada |
+| F4 | Transferencia de evidencia | Videos e imágenes recibidos sin errores críticos |
+| F5 | Inferencia multimodal | Respuesta con ganador y puntajes técnicos recibida y mostrada |
+| F6 | Persistencia e historial | Resultados almacenados en PostgreSQL y consultables |
+| F7 | Despliegue en evento | Operación conjunta de módulos físicos y lógicos durante IEEE Pumabot 2026 |
 
 ---
 
-## Ejemplo de resultado
+## 📡 Comunicación entre Módulos
 
-```text
-GANADOR: Robot A
-```
-
-| Robot A | Puntaje |
-|---|---:|
-| Agresividad | 12 |
-| Condición | 4 |
-| Daño | 8 |
-| Control | 7 |
-| Total | 31 |
-
-| Robot B | Puntaje |
-|---|---:|
-| Agresividad | 8 |
-| Condición | 2 |
-| Daño | 5 |
-| Control | 6 |
-| Total | 21 |
+| Origen | Destino | Canal | Datos | Propósito |
+|---|---|---|---|---|
+| Terminales A/B | Módulo de árbitro | ESP-NOW | Códigos de listo, alerta o rendición | Coordinar estado del competidor y solicitar intervención |
+| Módulo de árbitro | Temporizador oficial | Serial | Inicio, pausa, reanudación, detención | Controlar el tiempo reglamentario desde el dispositivo portátil |
+| Backend | Juez Bot | HTTP GET | Estados de grabación y pausa | Sincronizar captura con acciones del árbitro |
+| Juez Bot | Backend | HTTP multipart | Video MP4 y metadatos | Transferir evidencia audiovisual |
+| Aplicación web | Backend | HTTP multipart | Identificadores, video, imágenes iniciales/finales | Registrar el combate y solicitar inferencia |
+| Backend | Servicio de IA | HTTPS / JSON | Instrucciones y archivos codificados | Ejecutar el análisis multimodal |
+| Backend | PostgreSQL | SQL | Evidencia, puntajes, tiempos, estados | Garantizar persistencia y trazabilidad |
+| Backend | Aplicación web | HTTP / JSON | Resultado, explicación, historial | Apoyar revisión y confirmación del árbitro |
 
 ---
 
-## API Endpoints
+## 🔄 Secuencia Operativa
+
+1. Cada operador confirma que su robot está listo.
+2. Cuando ambos estados son válidos, el árbitro inicia el temporizador y la grabación.
+3. Durante el combate, los terminales pueden enviar alertas; el árbitro puede pausar o detener.
+4. Al finalizar, Juez Bot transfiere el video y se agregan las imágenes finales disponibles.
+5. El backend valida la evidencia y construye la solicitud multimodal.
+6. Si hay KO o rendición confirmados, se aplica la **regla directa** (sin pasar por el modelo de IA).
+7. Si el combate llega al límite de tiempo, se ejecuta el **análisis multimodal**.
+8. El sistema extrae el ganador propuesto y las puntuaciones por criterio.
+9. El resultado se almacena en PostgreSQL junto con la respuesta original del modelo.
+10. La interfaz presenta el resultado; el árbitro confirma o corrige la decisión final.
+
+### 🔁 Modelo de estados del combate
+
+`waiting` → `ready` → `recording` ⇄ `paused` → `finished` → `processing` → `result available` → `validated`
+
+---
+
+## 🌐 API Endpoints
 
 | Endpoint | Método | Descripción |
 |---|---|---|
 | `/` | GET | Muestra la interfaz principal. |
 | `/health` | GET | Verifica el estado del backend. |
-| `/upload` | POST | Permite subir el video grabado por la Raspberry Pi. |
-| `/analyze` | POST | Analiza el video e imágenes con inteligencia artificial. |
+| `/upload` | POST | Sube el video grabado por Juez Bot. |
+| `/analyze` | POST | Analiza video e imágenes con IA multimodal. |
 | `/historial` | GET | Consulta los últimos resultados almacenados. |
 | `/check_status` | GET | Verifica si existe un video disponible para analizar. |
 | `/start_recording` | GET | Inicia la grabación remota. |
@@ -314,116 +241,83 @@ GANADOR: Robot A
 
 ---
 
-## Estructura del proyecto
+## ⚙️ Instalación
 
-```text
-juez-logit/
-│
-├── main.py                         # Punto de entrada del backend
-├── config.py                       # Configuración general del sistema
-├── database.py                     # Conexión y operaciones con PostgreSQL
-├── requirements.txt                # Dependencias del proyecto
-├── .env.example                    # Ejemplo de variables de entorno
-│
-├── routers/
-│   └── analyze_router.py           # Endpoints de carga, análisis e historial
-│
-├── services/
-│   ├── gemini_service.py           # Servicio de análisis con Gemini
-│   ├── parser_service.py           # Extracción de ganador y puntajes
-│   ├── prompt_service.py           # Prompt técnico de evaluación
-│   └── video_service.py            # Almacenamiento de videos
-│
-├── templates/
-│   └── index.html                  # Interfaz web del sistema
-│
-├── videos/                         # Carpeta de videos grabados o cargados
-│
-├── raspberry/
-│   └── raspberry_recording.py      # Captura y envío de video desde Raspberry Pi
-│
-├── reloj/
-│   └── reloj_juez.py               # Reloj del juez con PyQt5
-│
-└── m5stack/
-    ├── botones_competidor_1.py     # Botones de estado del competidor 1
-    ├── botones_competidor_2.py     # Botones de estado del competidor 2
-    └── modulo_arbitro_core2.py     # Módulo del árbitro en M5Stack Core2
+```bash
+git clone https://github.com/PatrickZ29/RobotVisionIA.git
+cd RobotVisionIA
+python -m venv venv
+```
+
+En Windows:
+```bash
+venv\Scripts\activate
+```
+
+En Linux o macOS:
+```bash
+source venv/bin/activate
+```
+
+```bash
+pip install -r requirements.txt
 ```
 
 ---
 
-## Módulos físicos
+## 🔐 Configuración de Variables de Entorno
 
-### Raspberry Pi Zero 2 W
+```env
+GEMINI_API_KEY=coloca_tu_api_key_aqui
+GEMINI_MODEL=gemini-2.5-flash
 
-La Raspberry Pi se encarga de capturar el video de la batalla mediante una cámara USB. El script consulta constantemente el estado del backend y ejecuta acciones de grabación según los comandos recibidos:
+VIDEO_FOLDER=videos
 
-- Iniciar grabación.
-- Pausar grabación.
-- Reanudar grabación.
-- Detener grabación.
-- Unir segmentos de video.
-- Enviar video final al backend.
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=robot_ai
+DB_USER=postgres
+DB_PASSWORD=1234
+```
 
-### M5Stack Core2
+Para despliegue en Render o servicios similares:
+```env
+DATABASE_URL=postgresql://usuario:password@host:5432/base_datos
+```
 
-Los módulos M5Stack se utilizan para la interacción física durante la batalla. El sistema emplea comunicación ESP-NOW para enviar estados entre dispositivos.
-
-Funciones principales:
-
-- Botones de estado para competidores.
-- Pantalla de control del árbitro.
-- Indicadores visuales de alerta.
-- Envío de comandos de inicio y pausa.
-- Comunicación con el módulo receptor.
-
-### Reloj del juez
-
-El reloj del juez fue desarrollado con PyQt5 y comunicación serial USB. Permite mostrar el tiempo restante de la batalla y controlar el temporizador mediante comandos externos.
-
-Funciones:
-
-- Inicio del temporizador.
-- Pausa del temporizador.
-- Reinicio manual.
-- Visualización flotante sobre otras ventanas.
-- Cambio visual al finalizar el tiempo.
+> ⚠️ No se recomienda subir archivos `.env` ni claves privadas al repositorio.
 
 ---
 
-## Despliegue
+## ▶️ Ejecución del Backend
 
-El backend puede desplegarse en Render como servicio web Python.
+```bash
+uvicorn main:app --reload
+```
 
-Comando de inicio recomendado:
+```text
+http://localhost:8000
+http://localhost:8000/health
+```
+
+---
+
+## ☁️ Despliegue
 
 ```bash
 uvicorn main:app --host 0.0.0.0 --port $PORT
 ```
 
-Variables necesarias en el entorno de producción:
-
 ```env
 GEMINI_API_KEY=clave_de_gemini
-GEMINI_MODEL=gemini-3.1-flash-lite
+GEMINI_MODEL=gemini-2.5-flash
 DATABASE_URL=url_de_postgresql
 VIDEO_FOLDER=videos
 ```
 
 ---
 
-## Seguridad
-
-Para evitar exposición de información sensible:
-
-- No subir el archivo `.env`.
-- No subir claves de Gemini al repositorio.
-- No incluir credenciales reales en `config.py`.
-- Usar variables de entorno para producción.
-- Mantener `videos/`, `uploads/` y archivos temporales fuera de Git.
-
-Ejemplo de `.gitignore`:
+## 🛡️ Seguridad
 
 ```gitignore
 venv/
@@ -437,29 +331,44 @@ videos/
 .api_keys.py
 ```
 
----
-
-## Futuras mejoras
-
-- [ ] Integrar detección automática de eventos importantes durante la batalla.
-- [ ] Añadir transmisión en vivo del combate.
-- [ ] Incorporar sensores de impacto o telemetría.
-- [ ] Implementar dashboard con estadísticas de robots.
-- [ ] Crear sistema de ranking de competidores.
-- [ ] Añadir soporte para aplicación móvil.
-- [ ] Comparar resultados entre diferentes modelos de inteligencia artificial.
-- [ ] Mejorar el análisis en tiempo real con múltiples cámaras.
+- No subir `.env` ni claves de Gemini al repositorio.
+- No incluir credenciales reales en `config.py`.
+- Mantener `videos/`, `uploads/` y archivos temporales fuera de Git.
 
 ---
 
-## Autor
+## 🌱 Limitaciones y Trabajo Futuro
 
-**Patrick Neil Zamora Lascano**  
-Universidad Tecnológica Indoamérica  
-Carrera de Ingeniería en Tecnologías de la Información  
+- [ ] Cámaras sincronizadas para asociar cada criterio con evidencia temporal específica.
+- [ ] Inferencia repetida para medir estabilidad y calibración de confianza.
+- [ ] Comparación entre modelos y prompts (arbitraje por comité, ej. estilo EvalCouncil).
+- [ ] Inferencia parcial en el borde (*edge*) para reducir dependencia de Internet.
+- [ ] Esquemas JSON validados para respuestas del modelo.
+- [ ] Evaluación de disponibilidad, pérdida de paquetes ESP-NOW y costo por combate.
+- [ ] Mecanismos de apelación y revisión comprensibles para competidores y organizadores.
 
 ---
 
-## Licencia
+## 📄 Publicación Científica
 
-Este proyecto fue desarrollado con fines académicos como parte del trabajo de titulación relacionado con el sistema inteligente de arbitraje para robótica de combate.
+Este proyecto fue publicado como artículo en **IEEE Access**:
+
+> *An Integrated Multimodal System for AI-Assisted Refereeing in Combat Robotics*
+> Patrick Zamora, Steven Curipallo, José Varela-Aldás — Centro de Investigación MIST, Universidad Tecnológica Indoamérica, Ambato, Ecuador.
+> DOI: 10.1109/ACCESS.2026.XXXXXXX
+
+---
+
+## 👤 Autor
+
+**Patrick Neil Zamora Lascano**
+Universidad Tecnológica Indoamérica
+Carrera de Ingeniería en Tecnologías de la Información
+
+---
+
+## 📄 Licencia
+
+Este proyecto fue desarrollado con fines académicos como parte del trabajo de titulación relacionado con el sistema inteligente de arbitraje para robótica de combate, validado durante el evento **IEEE Pumabot 2026**.
+
+⭐ Proyecto académico de IA multimodal aplicada, IoT y arbitraje deportivo inteligente
